@@ -1,0 +1,9 @@
+[package]
+name = "zka_pay_deposit"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA/Pay Base WETH9 deposit validity circuit"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

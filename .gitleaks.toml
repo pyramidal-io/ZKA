@@ -1,0 +1,11 @@
+# Public CI secret-scan policy for the pyramidal-io/ZKA snapshot.
+#
+# Default gitleaks rules, no repository-local suppressions. Inline
+# `gitleaks:allow` comments are disabled by the CI invocation
+# (--ignore-gitleaks-allow), so a finding can only be suppressed by a reviewed
+# change to this file. There are currently no exceptions: the snapshot must
+# scan clean under the default ruleset.
+title = "ZKA public snapshot secret scan"
+
+[extend]
+useDefault = true

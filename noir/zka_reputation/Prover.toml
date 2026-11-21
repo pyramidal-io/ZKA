@@ -1,0 +1,45 @@
+# Canonical three-record AFP-14 reputation history vector. The public
+# pseudonym and root are pinned by `canonical_three_record_kat_is_valid`.
+agreement_id_hi = "0x0123456789abcdeffedcba9876543210"
+agreement_id_lo = "0x00112233445566778899aabbccddeeff"
+counterparty_aid_hi = "0x102132435465768798a9bacbdcedfe0f"
+counterparty_aid_lo = "0xffeeddccbbaa99887766554433221100"
+value_scope_hi = "0x0f0e0d0c0b0a09080706050403020100"
+value_scope_lo = "0x112233445566778899aabbccddeeff00"
+relationship_pseudonym = "0x304e967727812b6019e734655f6036ef63a8cc4771d1d1d1715f6c542be29fc4"
+history_root = "0x074ade4e5df8fbc1e3361e8503a6f446e7fa98e9a3054cd655914baed5ae2c29"
+last_commitment_ref_hi = "0x30000000000000000000000000000003"
+last_commitment_ref_lo = "0xcccccccccccccccccccccccccccccccc"
+reputation_counter = "11"
+settled_interactions = "3"
+cumulative_settled_value = "10000"
+# Field reduction of AFP §5.2's canonical
+# X_eddb6ad038bd9a1a79c6c1d29ebd7461da0383948b7e6c13dadd6553b97e4a7f KAT.
+context = "0x2c4a3104b3f719739885aaf898b812ed3933e272a498a9cecb558f03f97e4a7b"
+
+master_seed = "0x123456789abcdef"
+record_refs_hi = [
+  "0x10000000000000000000000000000001",
+  "0x20000000000000000000000000000002",
+  "0x30000000000000000000000000000003",
+  "0",
+  "0",
+  "0",
+  "0",
+  "0",
+]
+record_refs_lo = [
+  "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "0xcccccccccccccccccccccccccccccccc",
+  "0",
+  "0",
+  "0",
+  "0",
+  "0",
+]
+sequence_numbers = ["4", "7", "11", "0", "0", "0", "0", "0"]
+settled_values = ["1000", "2500", "6500", "0", "0", "0", "0", "0"]
+settled_flags = [true, true, true, false, false, false, false, false]
+slash_flags = [false, false, false, false, false, false, false, false]
+default_flags = [false, false, false, false, false, false, false, false]

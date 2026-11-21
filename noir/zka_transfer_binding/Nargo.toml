@@ -1,0 +1,9 @@
+[package]
+name = "zka_transfer_binding"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA combined transfer + seed-sibling credential binding circuit (circuit ID v2, spec §5.3)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

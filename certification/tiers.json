@@ -1,0 +1,48 @@
+{
+  "version": "zka:certification-tiers:v1",
+  "description": "Support-tier definitions for settlement adapters. A manifest claiming a tier MUST have status `pass` for every class the tier requires (validated by scripts/validate-certification.py; normative text in docs/certification/adapter_certification.md).",
+  "classes": [
+    "unit",
+    "mocked_integration",
+    "live_smoke",
+    "conformance_vectors",
+    "replay_negatives",
+    "finality_policy",
+    "indexer_reconstruction",
+    "registry_compliance",
+    "independent_audit"
+  ],
+  "tiers": {
+    "experimental": {
+      "required": [
+        "unit"
+      ]
+    },
+    "supported": {
+      "required": [
+        "unit",
+        "mocked_integration",
+        "live_smoke",
+        "conformance_vectors",
+        "replay_negatives",
+        "finality_policy",
+        "indexer_reconstruction",
+        "registry_compliance"
+      ]
+    },
+    "production": {
+      "required": [
+        "unit",
+        "mocked_integration",
+        "live_smoke",
+        "conformance_vectors",
+        "replay_negatives",
+        "finality_policy",
+        "indexer_reconstruction",
+        "registry_compliance",
+        "independent_audit"
+      ],
+      "additional": "All `supported` classes PLUS (a) an `independent_audit` of the settlement-facing contracts and circuits, and (b) an operator-signed live-deployment acceptance record against the production deployment with runbook on-call coverage. A live mainnet deployment that is unaudited is a DEV/PILOT instance, not production \u2014 it may claim at most `supported`. No adapter currently claims `production`."
+    }
+  }
+}

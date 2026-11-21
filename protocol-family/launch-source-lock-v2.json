@@ -1,0 +1,58 @@
+{
+  "format": "zka:launch-source-lock:v2",
+  "reviewed_on": "2026-11-18",
+  "sources": {
+    "zka": {
+      "commit": "8df996051ebec3bd47cc8fcce6feed24fa92972f",
+      "versions": {
+        "zka": "0.9.2-draft"
+      },
+      "files": {
+        ".noir-version": "sha256:afc0b9b4f9e37ea8a998e88b997fd83683b3ddb6e236ef9f5d72fa8df0d6b4ff",
+        "docs/zka_specification.md": "sha256:69178399742ca08ac5d100a581db83bfcf609747f18c204e02864b0c46f2b965"
+      }
+    },
+    "zkc": {
+      "commit": "c1d4c7bd5194f620fee052b0a4522689f5f407a5",
+      "versions": {
+        "zkc": "0.4.1-draft"
+      },
+      "files": {
+        ".noir-version": "sha256:9b1023f75b91494813197e5ea6537d91adc53875013f77f7ffb63b1f124364e4",
+        "docs/zkc_specification.md": "sha256:301f8baf0ae6aa928f2ec151c08d1a1e2566a331f6cbcaffe74498674f6cdebb"
+      }
+    },
+    "afp": {
+      "commit": "4642e521107eec84e3ba1e0f1e59ecf8f4226a4c",
+      "versions": {
+        "afp": "0.3.14-draft",
+        "kdc": "1.0.3"
+      },
+      "files": {
+        "docs/afp_specification.md": "sha256:3a59e61fc7b4d0a472e4002e945a31da0b965ae0dfd3ad2e92bfd43f5868748d",
+        "protocol-family/snapshot-lock.json": "sha256:a2f72f67680725641bd7d2ed221ad5cef8be5017fac0829279592ae903c5fa0b"
+      }
+    },
+    "zkm": {
+      "commit": "f9331aa160ebdd928fde64442d1340c8f93dec71",
+      "versions": {
+        "zkm": "0.1.0-draft (rev 13)"
+      },
+      "files": {
+        ".noir-version": "sha256:9c01e5b426612026b99d6bd48e705511307da6587c1a14f8e920dccae08a7ff7",
+        "docs/zkm_specification.md": "sha256:f99e89832070b644ec6963bd6d853e391964d29fd97ebc4d43cca9011af2848f",
+        "protocol-family/zkm-statement-registry-v1.json": "sha256:ce4e8c1b05bda86ddf7d304b9713fc1bd65ba3ab18ad85162f4c07281080624e"
+      }
+    },
+    "zka-langgraph": {
+      "commit": "0e7c6bf185870c30f4207f862d79c7e8be07f98e",
+      "versions": {
+        "zka-langgraph": "0.1.0.dev0"
+      },
+      "files": {
+        "pyproject.toml": "sha256:be696c523a42abfee85602ef2ad6fccd360e53ee769ad51dda1627e965f48513",
+        "src/zka_langgraph/capabilities/zkm.py": "sha256:aa93cdf91343161acd72e039f91f43de3574a8f649a9ffee6890a4829999f4d9"
+      }
+    }
+  }
+}

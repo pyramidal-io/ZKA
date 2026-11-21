@@ -1,0 +1,10 @@
+[package]
+name = "zka_coord_reciprocal_compute"
+type = "bin"
+authors = ["ZKA Protocol"]
+description = "ZK-native reciprocal chunk compute profile for ZKA/Coord v2"
+compiler_version = ">=1.0.0"
+
+[dependencies]
+zka_coord_v2 = { path = "../zka_coord_v2" }
+zka_lib = { path = "../zka_lib" }

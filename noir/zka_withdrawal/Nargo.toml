@@ -1,0 +1,9 @@
+[package]
+name = "zka_withdrawal"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA withdrawal circuit - private withdrawal to external address (v0.4.0)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

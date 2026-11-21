@@ -1,0 +1,9 @@
+[package]
+name = "zka_transfer_multi"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA multi-asset transfer circuit - up to 4 assets in a single proof (v0.4.0)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

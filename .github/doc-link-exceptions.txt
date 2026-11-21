@@ -1,0 +1,21 @@
+# Relative links in exported documentation whose targets are intentionally
+# NOT part of the published snapshot. Each entry is the resolved
+# repository-relative target path. The canonical specification is exported
+# byte-for-byte from the private development repository, so it may reference
+# design documents and schemas that remain private until a later, explicitly
+# reviewed scope decision publishes them. Removing an entry requires either
+# publishing the target (a PUBLIC_ALLOWLIST change) or a spec edit upstream.
+docs/operations/README.md
+docs/operations/evm_indexer.md
+docs/sdd/sdd_coord_reciprocal_data_exchange.md
+docs/sdd/sdd_coord_v2.md
+docs/sdd/sdd_pay_pool.md
+schemas/public-inputs/zka_coord_v2.json
+# Accepted Aztec architecture decisions are private planning records with internal tracking references.
+docs/adr/0006-aztec-native-pay-profile.md
+docs/adr/0010-aztec-flagship-and-production-gates.md
+docs/adr/0011-aztec-ethereum-exit-and-base-reachability.md
+# The receipt implementation profile links to private design material and internal tracking references.
+docs/sdd/sdd_aztec_pay_receipt.md
+# This historical v5 PXE review is not a qualification claim for the current v6 public profile.
+docs/security/aztec_pxe_randomness_review.md

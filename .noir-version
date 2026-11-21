@@ -1,0 +1,5 @@
+# Canonical Noir/Barretenberg toolchain versions for the ZKA reference circuits.
+# The Barretenberg version must remain compatible with the pinned Nargo ACIR.
+NARGO_VERSION=1.0.0-beta.25
+# Noir's beta.25 release script pairs this compiler with Barretenberg 5.0.0.
+BB_VERSION=5.0.0

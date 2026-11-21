@@ -1,0 +1,9 @@
+[package]
+name = "zka_recursive"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA recursive proof aggregation circuit - verifies and aggregates multiple ZKA proofs (v0.4.0)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

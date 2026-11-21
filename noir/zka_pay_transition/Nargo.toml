@@ -1,0 +1,9 @@
+[package]
+name = "zka_pay_transition"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA/Pay private two-input, three-output payment transition circuit"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

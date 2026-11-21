@@ -1,0 +1,9 @@
+[package]
+name = "zka_credential"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA normative note/credential identity binding circuit (circuit ID v2)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

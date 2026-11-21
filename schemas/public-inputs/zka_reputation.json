@@ -1,0 +1,131 @@
+{
+  "$schema": "https://zka.dev/schemas/public-input-encoder-v1.schema.json",
+  "version": "zka:public-inputs:v1",
+  "circuit": "zka_reputation",
+  "circuitId": "zka:reputation:ultrahonk:bn254:v1",
+  "description": "Bounded bilateral AFP Introduction Tier reputation-history proof",
+  "proofSystem": "ultra_honk",
+  "curve": "BN254",
+  "encoding": {
+    "fieldElement": "BN254 scalar field element, serialized as a canonical 32-byte big-endian value",
+    "order": "Declaration order of pub parameters in noir/zka_reputation/src/main.nr main()",
+    "booleans": "false = 0, true = 1",
+    "integers": "Unsigned integers are range-constrained by their Noir ABI type and zero-extended into one field element",
+    "byteArrays": "[u8; N] occupies N field elements in array order"
+  },
+  "totalFieldElements": 14,
+  "publicInputs": [
+    {
+      "index": 0,
+      "offset": 0,
+      "name": "agreement_id_hi",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "High 128 bits of the canonical agreement-id digest"
+    },
+    {
+      "index": 1,
+      "offset": 1,
+      "name": "agreement_id_lo",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "Low 128 bits of the canonical agreement-id digest"
+    },
+    {
+      "index": 2,
+      "offset": 2,
+      "name": "counterparty_aid_hi",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "High 128 bits of the verifier/counterparty AID digest"
+    },
+    {
+      "index": 3,
+      "offset": 3,
+      "name": "counterparty_aid_lo",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "Low 128 bits of the verifier/counterparty AID digest"
+    },
+    {
+      "index": 4,
+      "offset": 4,
+      "name": "value_scope_hi",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "High 128 bits of the signed single-asset/unit value-scope digest"
+    },
+    {
+      "index": 5,
+      "offset": 5,
+      "name": "value_scope_lo",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "Low 128 bits of the signed single-asset/unit value-scope digest"
+    },
+    {
+      "index": 6,
+      "offset": 6,
+      "name": "relationship_pseudonym",
+      "abiType": "Field",
+      "fieldElements": 1,
+      "description": "Agreement/counterparty/value-scope pseudonym derived from the private AFP-KDC per-entity seed"
+    },
+    {
+      "index": 7,
+      "offset": 7,
+      "name": "history_root",
+      "abiType": "Field",
+      "fieldElements": 1,
+      "description": "Poseidon2 root of the fixed-width bilateral reputation history, authenticated outside the circuit"
+    },
+    {
+      "index": 8,
+      "offset": 8,
+      "name": "last_commitment_ref_hi",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "High 128 bits of the last active AFP commitment-reference digest"
+    },
+    {
+      "index": 9,
+      "offset": 9,
+      "name": "last_commitment_ref_lo",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "Low 128 bits of the last active AFP commitment-reference digest"
+    },
+    {
+      "index": 10,
+      "offset": 10,
+      "name": "reputation_counter",
+      "abiType": "u64",
+      "fieldElements": 1,
+      "description": "Sequence number of the authenticated history head; the verifier enforces monotonic freshness"
+    },
+    {
+      "index": 11,
+      "offset": 11,
+      "name": "settled_interactions",
+      "abiType": "u32",
+      "fieldElements": 1,
+      "description": "Exact number of active, finally settled clean records in this bounded proof"
+    },
+    {
+      "index": 12,
+      "offset": 12,
+      "name": "cumulative_settled_value",
+      "abiType": "u128",
+      "fieldElements": 1,
+      "description": "Exact sum of active record values in the signed value scope"
+    },
+    {
+      "index": 13,
+      "offset": 13,
+      "name": "context",
+      "abiType": "Field",
+      "fieldElements": 1,
+      "description": "Non-zero AFP session/request replay context; AFP sessions use big-endian_uint256(the exact 32-byte X_ payload) mod the BN254 scalar modulus per AFP §15.4"
+    }
+  ]
+}

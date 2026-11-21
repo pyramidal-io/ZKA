@@ -1,0 +1,9 @@
+[package]
+name = "zka_transfer_binding_v2"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA transfer + ZKC v0.4 scoped-presentation binding circuit"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

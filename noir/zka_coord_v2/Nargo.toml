@@ -1,0 +1,9 @@
+[package]
+name = "zka_coord_v2"
+type = "lib"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "Shared ZKA/Coord v2 receipt constraints"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

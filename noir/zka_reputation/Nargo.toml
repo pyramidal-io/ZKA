@@ -1,0 +1,9 @@
+[package]
+name = "zka_reputation"
+type = "bin"
+authors = ["ZKA Protocol"]
+description = "Bounded AFP-14 relationship-scoped reputation history circuit"
+compiler_version = ">=1.0.0"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

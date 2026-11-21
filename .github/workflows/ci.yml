@@ -1,0 +1,303 @@
+# Public CI for the pyramidal-io/ZKA snapshot repository.
+#
+# This workflow is self-contained: it validates only the exported public
+# surface and references no private repositories, reusable workflows, secrets,
+# or runner labels. Every action reference is pinned to a reviewed full commit
+# SHA. Repository-managed binary downloads and installer entry points are
+# verified against pinned SHA-256 digests before execution. All jobs run with
+# a read-only token; the only job with contents write permission is the
+# tag-gated release job, which depends on
+# every validation job succeeding and refuses to publish a tag whose commit
+# is not an ancestor of public main.
+name: Public CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  surface:
+    name: Policy inventory & workflow pins
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Verify tracked tree matches PUBLIC_ALLOWLIST + PUBLIC_SURFACE
+        run: |
+          .github/scripts/check-public-surface.sh
+          python3 scripts/check_public_package_closure.py
+
+  docs:
+    name: Documentation links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Check documentation links
+        run: .github/scripts/check-doc-links.py
+
+  noir:
+    name: Noir circuits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Resolve pinned Nargo version
+        run: |
+          set -euo pipefail
+          nargo_version="$(grep -E '^NARGO_VERSION=' .noir-version | cut -d= -f2)"
+          [ -n "$nargo_version" ] || { echo "::error::NARGO_VERSION missing from .noir-version"; exit 1; }
+          echo "NARGO_VERSION=$nargo_version" >> "$GITHUB_ENV"
+
+      - name: Install Nargo
+        run: |
+          .github/scripts/install-nargo.sh "$NARGO_VERSION"
+          echo "$HOME/.nargo/bin" >> "$GITHUB_PATH"
+
+      # Supply-chain pin: nargo only supports a mutable `tag` for git deps (no
+      # rev/commit pin, no Nargo.lock), so a re-pointed v0.3.0 tag would
+      # silently change every Poseidon2 hash. Fail loudly if it moves. The
+      # zka_lib known-answer tests are the runtime backstop for hash drift.
+      - name: Verify poseidon dependency pin
+        run: |
+          set -euo pipefail
+          EXPECTED=0880c371e88e583d39515fd3f877538657ac41eb
+          ACTUAL=$(git ls-remote https://github.com/noir-lang/poseidon refs/tags/v0.3.0 | cut -f1)
+          [ "$ACTUAL" = "$EXPECTED" ] || { echo "::error::poseidon v0.3.0 tag moved ($ACTUAL != $EXPECTED)"; exit 1; }
+
+      - name: Check formatting
+        working-directory: noir
+        run: nargo fmt --check
+
+      - name: Check all circuits compile
+        working-directory: noir
+        run: nargo check
+
+      - name: Run all circuit tests
+        working-directory: noir
+        run: nargo test --workspace
+
+  aztec:
+    name: Aztec compile and pure tests
+    runs-on: ubuntu-latest
+    env:
+      AZTEC_VERSION: "6.0.0"
+      AZTEC_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.15.0"
+      - name: Field-encoding canonicity gate
+        run: ./aztec/scripts/check-field-encoding-canonicity.sh
+      - name: Install pinned Aztec V6 toolchain
+        run: .github/scripts/install-aztec-v6.sh
+      - name: Fetch Aztec workspace dependencies
+        working-directory: aztec
+        run: aztec-nargo fetch --workspace
+      - name: Verify Poseidon dependency source integrity
+        run: ./scripts/check-poseidon-source-integrity.sh
+      - name: Verify fetched Aztec dependency source integrity
+        run: ./scripts/check-aztec-source-integrity.sh
+      - name: Compile and run pure Aztec tests
+        working-directory: aztec
+        run: |
+          set -euo pipefail
+          aztec-nargo check --workspace
+          aztec compile --force
+          aztec-nargo test --package zka_aztec_lib
+          aztec-nargo test --package zka_cross_env_tests
+          aztec-nargo test --package zka_transfer_aztec conservation
+          aztec-nargo test --package zka_transfer_aztec withdrawal
+  txe:
+    name: TXE transition tests
+    runs-on: ubuntu-latest
+    needs: aztec
+    timeout-minutes: 60
+    env:
+      AZTEC_VERSION: "6.0.0"
+      AZTEC_NO_AUTO_UPDATE: 1
+      # Match the bounded oracle lifetime used by the private 8 GiB runner.
+      TXE_RESTART_EVERY: 6
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.15.0"
+      - name: Install pinned Aztec V6 toolchain
+        run: .github/scripts/install-aztec-v6.sh
+      - name: Fetch Aztec workspace dependencies
+        working-directory: aztec
+        run: aztec-nargo fetch --workspace
+      - name: Verify Poseidon dependency source integrity
+        run: ./scripts/check-poseidon-source-integrity.sh
+      - name: Verify fetched Aztec dependency source integrity
+        run: ./scripts/check-aztec-source-integrity.sh
+      - name: Restore pinned TXE Snappy binding
+        run: ./aztec/scripts/ensure-snappy-binding.sh
+      - name: Run TXE transition tests
+        run: ./aztec/scripts/txe-test.sh test
+  cross-env:
+    name: Real cross-environment proof
+    runs-on: ubuntu-latest
+    needs: aztec
+    env:
+      AZTEC_VERSION: "6.0.0"
+      AZTEC_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.15.0"
+      - name: Install pinned Aztec V6 toolchain
+        run: .github/scripts/install-aztec-v6.sh
+      - name: Fetch Aztec workspace dependencies
+        working-directory: aztec
+        run: aztec-nargo fetch --workspace
+      - name: Verify Poseidon dependency source integrity
+        run: ./scripts/check-poseidon-source-integrity.sh
+      - name: Verify fetched Aztec dependency source integrity
+        run: ./scripts/check-aztec-source-integrity.sh
+      - name: Generate and verify real cross-environment proof
+        run: ./noir/scripts/cross-env-proof.sh
+
+  rust-aztec:
+    name: Rust Aztec settlement adapter
+    runs-on: ubuntu-latest
+    env:
+      CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: .github/scripts/install-rust.sh
+      - name: Test registry and adapter
+        run: |
+          set -euo pipefail
+          cargo test --manifest-path src/zka-registry/Cargo.toml
+          cargo test --manifest-path src/zka-bridge-aztec/Cargo.toml
+
+  portal:
+    name: Local portal settlement tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: foundry-rs/foundry-toolchain@908c540300062bd5a7e473851cdb4282204cee09 # v1
+        with:
+          version: v1.7.1
+      - name: Install locked Foundry dependencies
+        run: forge soldeer install
+      - name: Test focused Aztec portal
+        run: forge test --match-path test/ZKAAztecPortal.t.sol -vvv
+
+  certification:
+    name: Public certification evidence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Validate public Aztec certification
+        run: python3 scripts/validate-certification.py --public-snapshot
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+      TRUFFLEHOG_VERSION: 3.97.0
+      TRUFFLEHOG_SHA256: 62224de2f9dd7cd418800feb953760a302ed2f82a7c547fe1146a4874fb179e4
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install pinned gitleaks
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --output gitleaks.tar.gz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tar.gz" | sha256sum --check --strict
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf gitleaks.tar.gz -C "$HOME/.local/bin" gitleaks
+          rm gitleaks.tar.gz
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install pinned trufflehog
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --output trufflehog.tar.gz \
+            "https://github.com/trufflesecurity/trufflehog/releases/download/v${TRUFFLEHOG_VERSION}/trufflehog_${TRUFFLEHOG_VERSION}_linux_amd64.tar.gz"
+          echo "${TRUFFLEHOG_SHA256}  trufflehog.tar.gz" | sha256sum --check --strict
+          tar -xzf trufflehog.tar.gz -C "$HOME/.local/bin" trufflehog
+          rm trufflehog.tar.gz
+
+      - name: Run gitleaks
+        run: |
+          set -euo pipefail
+          gitleaks dir . --config .gitleaks.toml --redact=100 --ignore-gitleaks-allow --no-banner
+
+      - name: Run trufflehog
+        run: |
+          set -euo pipefail
+          output="$(trufflehog filesystem . --json --no-update --fail --fail-on-scan-errors)"
+          if [ -n "$output" ]; then
+            echo "::error::trufflehog returned unexpected scanner output"
+            exit 1
+          fi
+
+  release:
+    name: Release (tag only)
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [surface, docs, noir, aztec, txe, cross-env, rust-aztec, portal, certification, secret-scan]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify tagged commit is on public main
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main
+      - name: Create release from validated tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          .github/scripts/check-release-changelog.py \
+            --tag "$GITHUB_REF_NAME" \
+            --source-root . \
+            --source-revision "$GITHUB_SHA"
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --title "ZKA $GITHUB_REF_NAME" \
+            --notes-file docs/RELEASE_NOTES.md

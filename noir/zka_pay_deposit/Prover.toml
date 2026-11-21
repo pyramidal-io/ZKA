@@ -1,0 +1,9 @@
+# Deterministic valid witness for zka_pay_deposit. The note fixture matches the
+# canonical zka_transfer output fixture for asset 1, value 1000, recipient
+# 0x0fedbeef, and randomness 0xccdd0001.
+note_commitment = "0x021b24a1dadcd67c39773bf2940a753efc90577190e8af769467a92e45871a87"
+amount = "1000"
+asset_commitment = "0x2c70c91441ab9da301ce8574578d4c5ada025a6539d1fc5863f657fd5dd09513"
+pool_context = "0xdeadbeef"
+recipient = "0x0fedbeef"
+randomness = "0xccdd0001"

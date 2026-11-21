@@ -1,0 +1,657 @@
+{
+  "version": "zka:registry:v1",
+  "description": "Canonical ZKA chain / verifier / public-input encoding registry. Every live settlement adapter loads this registry (compiled into the zka-registry crate) and fails closed on any chain, verifier, or public-input metadata that does not match it. See docs/sdd/sdd_registry_encodings.md for the encoding annex.",
+  "bridgeDomainRules": {
+    "evm-abi-uint256-chain-id": {
+      "description": "EVM settlement domains are bound by the chain id as a 32-byte big-endian ABI word: abi.encode(uint256(chainId)). This is the chain-id word of the ADR 0003 asset-id digest keccak256(abi.encode(uint256(chainId), address(token)))."
+    },
+    "aztec-portal-evm-binding": {
+      "description": "Aztec withdrawals settle through an immutable per-asset L1 portal consuming the rollup Outbox: every L2->L1 message binds (l2Bridge actor, rollup version) as sender and (portalAddress, uint256(l1ChainId)) as recipient, with content = sha256ToField(selector ++ recipient ++ amount), so the Aztec domain is anchored to a registered eip155 chain plus the deployed portal/outbox addresses (contracts/ethereum/ZKAAztecPortal.sol)."
+    }
+  },
+  "chains": [
+    {
+      "chainId": "eip155:1",
+      "namespace": "eip155",
+      "reference": "1",
+      "displayName": "Ethereum mainnet",
+      "tier": "main",
+      "settlementAdapter": "ethereum",
+      "bridgeDomainRule": "evm-abi-uint256-chain-id",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": "evm-ultra-honk-v1",
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 2,
+        "minFinalityDepth": 64,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "eip155:11155111",
+      "namespace": "eip155",
+      "reference": "11155111",
+      "displayName": "Ethereum Sepolia testnet",
+      "tier": "test",
+      "settlementAdapter": "ethereum",
+      "bridgeDomainRule": "evm-abi-uint256-chain-id",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": "evm-ultra-honk-v1",
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 1,
+        "minFinalityDepth": 32,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "eip155:8453",
+      "namespace": "eip155",
+      "reference": "8453",
+      "displayName": "Base mainnet (ADR-0008 launch L2)",
+      "tier": "main",
+      "settlementAdapter": "ethereum",
+      "bridgeDomainRule": "evm-abi-uint256-chain-id",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": "evm-ultra-honk-v1",
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 2,
+        "minFinalityDepth": 64,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "eip155:84532",
+      "namespace": "eip155",
+      "reference": "84532",
+      "displayName": "Base Sepolia testnet",
+      "tier": "test",
+      "settlementAdapter": "ethereum",
+      "bridgeDomainRule": "evm-abi-uint256-chain-id",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": "evm-ultra-honk-v1",
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 1,
+        "minFinalityDepth": 32,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "eip155:31337",
+      "namespace": "eip155",
+      "reference": "31337",
+      "displayName": "Local Anvil devnet",
+      "tier": "dev",
+      "settlementAdapter": "ethereum",
+      "bridgeDomainRule": "evm-abi-uint256-chain-id",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": "evm-ultra-honk-v1",
+      "finalityPolicy": {
+        "finalityClass": "instant",
+        "minConfirmations": 1,
+        "minFinalityDepth": 1,
+        "maxReorgDepth": 0
+      }
+    },
+    {
+      "chainId": "aztec:mainnet",
+      "namespace": "aztec",
+      "reference": "mainnet",
+      "displayName": "Aztec mainnet (settled via L1 portal + rollup outbox)",
+      "tier": "main",
+      "settlementAdapter": "aztec",
+      "bridgeDomainRule": "aztec-portal-evm-binding",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": null,
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 2,
+        "minFinalityDepth": 64,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "aztec:alpha-testnet",
+      "namespace": "aztec",
+      "reference": "alpha-testnet",
+      "displayName": "Aztec alpha testnet (Sepolia L1 anchor)",
+      "tier": "test",
+      "settlementAdapter": "aztec",
+      "bridgeDomainRule": "aztec-portal-evm-binding",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": null,
+      "finalityPolicy": {
+        "finalityClass": "probabilistic",
+        "minConfirmations": 1,
+        "minFinalityDepth": 32,
+        "maxReorgDepth": 64
+      }
+    },
+    {
+      "chainId": "aztec:sandbox",
+      "namespace": "aztec",
+      "reference": "sandbox",
+      "displayName": "Local Aztec sandbox (Anvil L1 anchor)",
+      "tier": "dev",
+      "settlementAdapter": "aztec",
+      "bridgeDomainRule": "aztec-portal-evm-binding",
+      "assetEncoding": "l1-erc20-keccak248",
+      "verifierSet": null,
+      "finalityPolicy": {
+        "finalityClass": "instant",
+        "minConfirmations": 1,
+        "minFinalityDepth": 1,
+        "maxReorgDepth": 0
+      }
+    }
+  ],
+  "verifierSets": {
+    "evm-ultra-honk-v1": [
+      "zka:verifier:evm:ultra_honk:zka_pay_batch",
+      "zka:verifier:evm:ultra_honk:zka_pay_deposit",
+      "zka:verifier:evm:ultra_honk:zka_pay_withdrawal",
+      "zka:verifier:evm:ultra_honk:zka_credential",
+      "zka:verifier:evm:ultra_honk:zka_root_update",
+      "zka:verifier:evm:ultra_honk:zka_transfer",
+      "zka:verifier:evm:ultra_honk:zka_transfer_binding",
+      "zka:verifier:evm:ultra_honk:zka_transfer_binding_v2",
+      "zka:verifier:evm:ultra_honk:zka_withdrawal"
+    ],
+    "offchain-ultra-honk-v1": [
+      "zka:verifier:offchain:ultra_honk:zka_balance",
+      "zka:verifier:offchain:ultra_honk:zka_coordination_v2",
+      "zka:verifier:offchain:ultra_honk:zka_coordination_v2_profile",
+      "zka:verifier:offchain:ultra_honk:zka_coordination_v2_recursive",
+      "zka:verifier:offchain:ultra_honk:zka_coord_v2_sample_application",
+      "zka:verifier:offchain:ultra_honk:zka_coord_reconciliation",
+      "zka:verifier:offchain:ultra_honk:zka_coord_reciprocal_compute",
+      "zka:verifier:offchain:ultra_honk:zka_coord_reciprocal_ack",
+      "zka:verifier:offchain:ultra_honk:zka_credential",
+      "zka:verifier:offchain:ultra_honk:zka_pay_transition",
+      "zka:verifier:offchain:ultra_honk:zka_recursive",
+      "zka:verifier:offchain:ultra_honk:zka_reputation",
+      "zka:verifier:offchain:ultra_honk:zka_root_update",
+      "zka:verifier:offchain:ultra_honk:zka_transfer",
+      "zka:verifier:offchain:ultra_honk:zka_transfer_binding",
+      "zka:verifier:offchain:ultra_honk:zka_transfer_binding_v2",
+      "zka:verifier:offchain:ultra_honk:zka_transfer_multi",
+      "zka:verifier:offchain:ultra_honk:zka_withdrawal"
+    ]
+  },
+  "circuits": [
+    {
+      "name": "zka_balance",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "merkle_root",
+        "asset_commitment",
+        "threshold_or_lower",
+        "upper_bound",
+        "proof_type",
+        "context"
+      ],
+      "encoder": "schemas/public-inputs/zka_balance.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coordination_v2",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coordination_v2_profile",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coordination_v2_recursive",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment",
+        "graph_commitment",
+        "proof_node_count",
+        "max_depth"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2_recursive.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coord_v2_sample_application",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coord_reconciliation",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coord_reciprocal_compute",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_coord_reciprocal_ack",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "protocol_version",
+        "workflow_definition_hash",
+        "workflow_instance_id",
+        "context",
+        "initial_state_commitment",
+        "profile_id",
+        "profile_version",
+        "profile_manifest_hash",
+        "profile_vk_hash",
+        "verifier_policy_root",
+        "assurance_class",
+        "step_id",
+        "step_index",
+        "predecessor_count",
+        "predecessor_step_ids",
+        "input_commitments",
+        "input_set_commitment",
+        "pre_state_commitment",
+        "output_commitment",
+        "post_state_commitment",
+        "external_fact_commitment",
+        "data_availability_commitment",
+        "topology_commitment",
+        "receipt_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_coord_v2.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_credential",
+      "circuitId": "zka:credential:ultrahonk:bn254:v2",
+      "artifactId": "zka_credential:afp-kdc-v1.0.1",
+      "derivationProfile": "afp-kdc-v1.0.1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "note_commitment",
+        "holder_commitment",
+        "merkle_root",
+        "context"
+      ],
+      "encoder": "schemas/public-inputs/zka_credential.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaCredentialHonkVerifier.sol"
+    },
+    {
+      "name": "zka_pay_batch",
+      "circuitId": "zka:pay_batch:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm"],
+      "publicInputs": [
+        "old_commitment_root",
+        "new_commitment_root",
+        "old_nullifier_root",
+        "new_nullifier_root",
+        "old_commitment_count",
+        "new_commitment_count",
+        "old_deposit_index",
+        "new_deposit_index",
+        "deposit_prefix_digest",
+        "batch_data_digest",
+        "payment_count",
+        "asset_commitment",
+        "pool_context"
+      ],
+      "encoder": "schemas/public-inputs/zka_pay_batch.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaPayBatchHonkVerifier.sol"
+    },
+    {
+      "name": "zka_pay_deposit",
+      "circuitId": "zka:pay_deposit:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm"],
+      "publicInputs": [
+        "note_commitment",
+        "amount",
+        "asset_commitment",
+        "pool_context"
+      ],
+      "encoder": "schemas/public-inputs/zka_pay_deposit.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaPayDepositHonkVerifier.sol"
+    },
+    {
+      "name": "zka_pay_transition",
+      "circuitId": "zka:pay_transition:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "nullifiers",
+        "output_commitments",
+        "commitment_root",
+        "pool_context",
+        "interaction_context",
+        "announcement_bundle_hash_hi",
+        "announcement_bundle_hash_lo",
+        "fee_recipient",
+        "asset_commitment",
+        "num_inputs",
+        "has_change",
+        "has_fee"
+      ],
+      "encoder": "schemas/public-inputs/zka_pay_transition.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_pay_withdrawal",
+      "circuitId": "zka:pay_withdrawal:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm"],
+      "publicInputs": [
+        "commitment_root",
+        "old_nullifier_root",
+        "new_nullifier_root",
+        "nullifier",
+        "amount",
+        "external_recipient",
+        "asset_commitment",
+        "pool_context"
+      ],
+      "encoder": "schemas/public-inputs/zka_pay_withdrawal.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaPayWithdrawalHonkVerifier.sol"
+    },
+    {
+      "name": "zka_recursive",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "aggregation_commitment",
+        "num_proofs",
+        "context"
+      ],
+      "encoder": "schemas/public-inputs/zka_recursive.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_reputation",
+      "circuitId": "zka:reputation:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "agreement_id_hi",
+        "agreement_id_lo",
+        "counterparty_aid_hi",
+        "counterparty_aid_lo",
+        "value_scope_hi",
+        "value_scope_lo",
+        "relationship_pseudonym",
+        "history_root",
+        "last_commitment_ref_hi",
+        "last_commitment_ref_lo",
+        "reputation_counter",
+        "settled_interactions",
+        "cumulative_settled_value",
+        "context"
+      ],
+      "encoder": "schemas/public-inputs/zka_reputation.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_root_update",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "prev_root",
+        "new_root",
+        "prev_total",
+        "new_total",
+        "blob_kzg_commitment",
+        "deposit_commitments",
+        "deposit_commitments_len"
+      ],
+      "encoder": "schemas/public-inputs/zka_root_update.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaRootUpdateHonkVerifier.sol"
+    },
+    {
+      "name": "zka_transfer",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "nullifier",
+        "output_commitment",
+        "merkle_root",
+        "context",
+        "asset_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_transfer.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaTransferHonkVerifier.sol"
+    },
+    {
+      "name": "zka_transfer_binding",
+      "circuitId": "zka:transfer_binding:ultrahonk:bn254:v2",
+      "artifactId": "zka_transfer_binding:afp-kdc-v1.0.1",
+      "derivationProfile": "afp-kdc-v1.0.1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "nullifier",
+        "output_commitment",
+        "merkle_root",
+        "context",
+        "holder_commitment"
+      ],
+      "encoder": "schemas/public-inputs/zka_transfer_binding.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaTransferBindingAfpKdcV101HonkVerifier.sol"
+    },
+    {
+      "name": "zka_transfer_binding_v2",
+      "circuitId": "zka:transfer_binding_scoped:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "nullifier",
+        "output_commitment",
+        "merkle_root",
+        "context",
+        "presentation_pseudonym",
+        "scope_id"
+      ],
+      "encoder": "schemas/public-inputs/zka_transfer_binding_v2.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaTransferBindingV2HonkVerifier.sol"
+    },
+    {
+      "name": "zka_transfer_multi",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["offchain"],
+      "publicInputs": [
+        "nullifiers",
+        "output_commitments",
+        "merkle_root",
+        "context",
+        "asset_commitments",
+        "num_assets"
+      ],
+      "encoder": "schemas/public-inputs/zka_transfer_multi.json",
+      "evmVerifierContract": null
+    },
+    {
+      "name": "zka_withdrawal",
+      "circuitId": "zka:withdrawal:ultrahonk:bn254:v1",
+      "scheme": "ultra_honk",
+      "verifierTargets": ["evm", "offchain"],
+      "publicInputs": [
+        "nullifier",
+        "merkle_root",
+        "withdrawal_amount",
+        "asset_commitment",
+        "external_recipient",
+        "context"
+      ],
+      "encoder": "schemas/public-inputs/zka_withdrawal.json",
+      "evmVerifierContract": "contracts/ethereum/verifiers/ZkaWithdrawalHonkVerifier.sol"
+    }
+  ]
+}

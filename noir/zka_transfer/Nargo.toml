@@ -1,0 +1,9 @@
+[package]
+name = "zka_transfer"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA transfer circuit - single-asset private transfer (v0.4.0)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

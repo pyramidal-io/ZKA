@@ -1,0 +1,136 @@
+{
+  "version": "zka:certification:v1",
+  "adapter": "aztec",
+  "display_name": "Aztec 6.0.0 two-way reference integration",
+  "tier": "experimental",
+  "release_label": "Experimental two-way reference integration targeting Aztec 6.0.0. Compile and test coverage does not establish proving-system qualification. Public-network acceptance and production activation remain gated; compiler diagnostics and holder/runtime limitations remain unresolved. No independent audit has been completed. Not production certified.",
+  "deployment_status": "not activated; complete V6 lifecycle qualification outstanding",
+  "production_certification": "absent",
+  "independent_audit": "missing",
+  "public_network_acceptance": "deferred pending exact-artifact public-network acceptance",
+  "classes": {
+    "unit": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/types.rs",
+          "name": "content_hash_matches_l2_and_l1_golden"
+        },
+        {
+          "kind": "ci_job",
+          "workflow": ".github/workflows/ci.yml",
+          "job": "Aztec compile and pure tests"
+        },
+        {
+          "kind": "forge_test",
+          "path": "test/ZKAAztecPortal.t.sol",
+          "pattern": "Portal"
+        }
+      ]
+    },
+    "mocked_integration": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_file",
+          "path": "src/zka-bridge-aztec/tests/node_client.rs"
+        },
+        {
+          "kind": "ci_job",
+          "workflow": ".github/workflows/ci.yml",
+          "job": "Rust Aztec settlement adapter"
+        }
+      ]
+    },
+    "live_smoke": {
+      "status": "partial",
+      "evidence": [
+        {
+          "kind": "path",
+          "path": "docs/operations/aztec_outbox.md"
+        },
+        {
+          "kind": "ci_job",
+          "workflow": ".github/workflows/ci.yml",
+          "job": "Local portal settlement tests"
+        }
+      ],
+      "notes": "Published evidence covers local settlement only; exact-artifact public-network acceptance and complete V6 lifecycle qualification remain outstanding."
+    },
+    "conformance_vectors": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "path",
+          "path": "aztec/zka_cross_env_tests/src/lib.nr"
+        },
+        {
+          "kind": "ci_job",
+          "workflow": ".github/workflows/ci.yml",
+          "job": "Real cross-environment proof"
+        }
+      ]
+    },
+    "replay_negatives": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/outbox.rs",
+          "name": "outbox_entries_are_single_consumption"
+        },
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/flows.rs",
+          "name": "prepare_rejects_replayed_entries"
+        }
+      ]
+    },
+    "finality_policy": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/outbox.rs",
+          "name": "proven_gate_rejects_unproven_blocks"
+        },
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/types.rs",
+          "name": "config_finality_depth_tighten_not_loosen"
+        }
+      ]
+    },
+    "indexer_reconstruction": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/tests/node_client.rs",
+          "name": "portal_events_filter_on_the_portal_address_and_topic"
+        }
+      ],
+      "notes": "Recorded L1 portal event reconstruction is exercised locally; no public deployment is claimed."
+    },
+    "registry_compliance": {
+      "status": "pass",
+      "evidence": [
+        {
+          "kind": "test_fn",
+          "path": "src/zka-bridge-aztec/types.rs",
+          "name": "config_validation_rejects_unregistered_chains"
+        },
+        {
+          "kind": "test_fn",
+          "path": "src/zka-registry/src/lib.rs",
+          "name": "aztec_asset_projects_to_the_same_l1_field_as_its_underlying"
+        }
+      ]
+    },
+    "independent_audit": {
+      "status": "missing",
+      "notes": "No independent security audit has been completed. Production certification is absent."
+    }
+  }
+}

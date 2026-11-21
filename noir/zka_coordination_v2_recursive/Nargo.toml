@@ -1,0 +1,10 @@
+[package]
+name = "zka_coordination_v2_recursive"
+type = "bin"
+authors = ["ZKA Protocol"]
+description = "Sound bounded recursive DAG composition for ZKA/Coord v2"
+compiler_version = ">=1.0.0"
+
+[dependencies]
+zka_coord_v2 = { path = "../zka_coord_v2" }
+zka_lib = { path = "../zka_lib" }

@@ -1,0 +1,10 @@
+[package]
+name = "zka_coord_v2_sample_application"
+type = "bin"
+authors = ["ZKA Protocol"]
+description = "Coord v2 sample application predicate used for profile-adapter conformance"
+compiler_version = ">=1.0.0"
+
+[dependencies]
+zka_coord_v2 = { path = "../zka_coord_v2" }
+zka_lib = { path = "../zka_lib" }

@@ -1,0 +1,9 @@
+[package]
+name = "zka_root_update"
+type = "bin"
+authors = ["ZKA Protocol"]
+compiler_version = ">=1.0.0"
+description = "ZKA root update circuit - bridge root advancement via Poseidon2 incremental insertion (S.3.3)"
+
+[dependencies]
+zka_lib = { path = "../zka_lib" }

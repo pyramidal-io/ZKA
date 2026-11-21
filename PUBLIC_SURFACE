@@ -1,0 +1,26 @@
+# PUBLIC_SURFACE — overlay destinations added to the pyramidal-io/ZKA snapshot.
+#
+# Every non-comment line names one exact public-only overlay file that exists in
+# the public repository IN ADDITION to the PUBLIC_ALLOWLIST entries. Public CI
+# fails closed if the tracked tree differs from the union of PUBLIC_ALLOWLIST
+# and this manifest in either direction. Changing this file requires the same
+# review as changing PUBLIC_ALLOWLIST.
+.github/doc-link-exceptions.txt
+.github/scripts/check-doc-links.py
+.github/scripts/check-public-surface.sh
+.github/scripts/check-release-changelog.py
+.github/scripts/install-nargo.sh
+.github/scripts/install-aztec-v6.sh
+.github/scripts/install-rust.sh
+.github/workflows/ci.yml
+.gitleaks.toml
+CHANGELOG.md
+CONTRIBUTING.md
+certification/aztec.json
+docs/certification/aztec.md
+docs/RELEASE_NOTES.md
+foundry.toml
+PUBLIC_SURFACE
+README.md
+SECURITY.md
+docs/public-snapshot-provenance.md
